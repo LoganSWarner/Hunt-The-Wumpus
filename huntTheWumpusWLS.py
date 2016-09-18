@@ -24,10 +24,17 @@
 # A version of the classical "Hunt The Wumpus" game in Python 2.7
 # ***************************************************************
 
+# --------------
+# Python imports
+# --------------
+import random
+
 # ---------
 # Functions
 # ---------
-def giveInstructions():
+
+
+def give_instructions():
     print("")
     print('The Wumpus lives in a cave of 20 rooms.')
     print('Each cave has 3 tunnels that lead to other rooms.')
@@ -89,6 +96,59 @@ def giveInstructions():
 # def give_instructions()
 
 
+def make_room_layout():
+    """Build a representation of the rooms for the game rooms
+    and place non-player objects"""
+    '''
+    Algorithm
+    ---------
+    A01 Create a size 20 list, room_paths, to represent paths
+    A02 Populate room_paths according to possible vertices to go to for each
+        index, based on numbering a dodecahedron in a spiral manner
+    A03 Create a size 20 list, room_items, to represent room contents
+    A04 Populate room_items with, randomly-placed, 2 bats & pits
+    A05 Place, randomly, a Wumpus into room_items
+    '''
+
+    room_paths = [None] * 20                                               # A01
+    room_paths[0] = [1, 2, 3]                                              # A02
+    room_paths[1] = [0, 4, 5]
+    room_paths[2] = [0, 6, 7]
+    room_paths[3] = [0, 8, 9]
+    room_paths[4] = [1, 9, 10]
+    room_paths[5] = [1, 6, 11]
+    room_paths[6] = [2, 5, 12]
+    room_paths[7] = [2, 8, 13]
+    room_paths[8] = [3, 7, 14]
+    room_paths[9] = [3, 4, 15]
+    room_paths[10] = [4, 11, 16]
+    room_paths[11] = [5, 10, 17]
+    room_paths[12] = [6, 13, 17]
+    room_paths[13] = [7, 12, 18]
+    room_paths[14] = [8, 15, 18]
+    room_paths[15] = [9, 14, 16]
+    room_paths[16] = [10, 15, 19]
+    room_paths[17] = [11, 12, 19]
+    room_paths[18] = [13, 14, 19]
+    room_paths[19] = [16, 17, 18]
+
+    room_items = [[]] * 20                                                 # A03
+    random.seed()                                                          # A04
+    for i in range(1, 2):
+        room_items[random.randint(0, 19)] += ['bat']
+        room_items[random.randint(0, 19)] += ['pit']
+    room_items[random.randint(0, 19)] += ['Wumpus']                        # A05
+    print room_items
+    return room_paths, room_items
+# def makeRoomLayout
+
+
+def find_empty_room(room_items):
+    for index, items in enumerate(room_items):
+        if items is []:
+            return index
+#def find_empty_room
+
 # -----
 # Main
 # ----
@@ -115,15 +175,24 @@ def main():
             Do you want instructions (y/n)>
     A03 If (usr requested instructions) {
             Display <instructions>
-    <rest to be supplied>
+    A04 Set up the rooms
+    A05 Place the user in an empty room
+    A06 Obtain action from user
+    A07 Perform action
+        A08 Shoot
+        A09 Move rooms
+    A10 Change room state
     '''
 
-    print("")  # A01
+    print("")                                                             # A01
     print("+++++++++++++++++")
     print("+Hunt The Wumpus+")
     print("+++++++++++++++++\n")
 
-    giveInstructions()  # A02
+    give_instructions()                                                    # A02
+
+    room_paths, room_items = make_room_layout()
+    player_position = find_empty_room(room_items)
 
     print("-----------------")
     print("-Hunt The Wumpus-")
