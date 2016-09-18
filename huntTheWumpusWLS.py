@@ -93,11 +93,8 @@ def giveInstructions():
 # Main
 # ----
 def main():
-    """
-    Plays one round of Hunt-The-Wumpus with a user.
-    """
-
-    """
+    """Plays one round of Hunt-The-Wumpus with a user."""
+    '''
     On each round the configuration of rooms and tunnels
     is the same, but the bottomless pits are placed at
     random. The initial position of the Wumpus and the
@@ -114,13 +111,12 @@ def main():
     Algorithm
     ---------
     A01 Display opening salutation;
-
     A02 Obtain request from user for instructions (usrChoice):
             Do you want instructions (y/n)>
     A03 If (usr requested instructions) {
-            Display <instuctions>
+            Display <instructions>
     <rest to be supplied>
-    """
+    '''
 
     print("")  # A01
     print("+++++++++++++++++")
