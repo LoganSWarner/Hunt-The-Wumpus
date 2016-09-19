@@ -8,6 +8,7 @@
 # HISTORY:
 # Date		Author		    Description
 # ====		======		    ===========
+# 09/18/16  Logan Warner    Implemented actual game
 #
 # ATTRIBUTION:
 # From code by Michael P. Conlon
@@ -37,9 +38,9 @@ import random
 def give_instructions():
     print("")
     print('The Wumpus lives in a cave of 20 rooms.')
-    print('Each cave has 3 tunnels that lead to other rooms.')
-    print('The Wumpus occasionally ventures out of  his room')
-    print('and eats pets and children in a nearly village.')
+    print('Each room has 3 tunnels that lead to other rooms.')
+    print('The Wumpus occasionally ventures out')
+    print('to eat pets and children in a nearly village.')
     print('Since you are a renowned hunter you have been')
     print('commissioned to hunt and slay the Wumpus!')
     print('')
@@ -47,13 +48,13 @@ def give_instructions():
     print('---------')
     print('Two of the rooms have bottomless pits in them.')
     print('If you go into one of these rooms you will fall into')
-    print('the pit and never be seen again! But there is a clue.')
+    print('the pit and never be seen again! But there is a clue:')
     print('When you are in a room that has a tunnel that connects')
     print('to a room with a bottomless pit you will feel a draft.')
     print(' ')
     print('The Wumpus shares his cave with two giant bats.')
-    print('These giant bats live in two distinct rooms. If you')
-    print('so much as enter one of these rooms, a giant bat will')
+    print('These giant bats live in two different rooms. If you')
+    print('enter one of these rooms, a giant bat will')
     print('grab you and take you to some other room at random.')
     print('This can possibly cost you your life!')
     print('If a giant bat takes you to another room, the bat')
@@ -93,67 +94,148 @@ def give_instructions():
     print('many rooms as you listed. If your arrow hits the Wumpus')
     print('you win and collect your handsome commission.')
     print('If the arrow hits you, you die, and stay dead!\n')
-# def give_instructions()
+# give_instructions()
 
 
-def make_room_layout():
-    """Build a representation of the rooms for the game rooms
-    and place non-player objects"""
-    '''
-    Algorithm
-    ---------
-    A01 Create a size 20 list, room_paths, to represent paths
-    A02 Populate room_paths according to possible vertices to go to for each
-        index, based on numbering a dodecahedron in a spiral manner
-    A03 Create a size 20 list, room_items, to represent room contents
-    A04 Populate room_items with, randomly-placed, 2 bats & pits
-    A05 Place, randomly, a Wumpus into room_items
-    '''
+class WumpusCave:
+    def __init__(self):
+        self.player_alive = True
+        self.room_path, self.room_items = WumpusCave.make_room_layout()
+        self.arrow_count = 5
+        self.player_position = self.find_empty_room();
+    # __init__
 
-    room_paths = [None] * 20                                               # A01
-    room_paths[0] = [1, 2, 3]                                              # A02
-    room_paths[1] = [0, 4, 5]
-    room_paths[2] = [0, 6, 7]
-    room_paths[3] = [0, 8, 9]
-    room_paths[4] = [1, 9, 10]
-    room_paths[5] = [1, 6, 11]
-    room_paths[6] = [2, 5, 12]
-    room_paths[7] = [2, 8, 13]
-    room_paths[8] = [3, 7, 14]
-    room_paths[9] = [3, 4, 15]
-    room_paths[10] = [4, 11, 16]
-    room_paths[11] = [5, 10, 17]
-    room_paths[12] = [6, 13, 17]
-    room_paths[13] = [7, 12, 18]
-    room_paths[14] = [8, 15, 18]
-    room_paths[15] = [9, 14, 16]
-    room_paths[16] = [10, 15, 19]
-    room_paths[17] = [11, 12, 19]
-    room_paths[18] = [13, 14, 19]
-    room_paths[19] = [16, 17, 18]
+    @staticmethod
+    def make_room_layout():
+        """
+        Build a representation of the rooms for the game rooms
+        and place non-player objects
+        :rtype: object
+        """
+        '''
+        Algorithm
+        ---------
+        A01 Create a size 20 list, room_paths, to represent paths
+        A02 Populate room_paths according to possible vertices to go to for each
+            index, based on numbering a dodecahedron in a spiral manner
+        A03 Create a size 20 list, room_items, to represent room contents
+        A04 Populate room_items with, randomly-placed, 2 bats & pits
+        A05 Place, randomly, a Wumpus into room_items
+        '''
 
-    room_items = [[]] * 20                                                 # A03
-    random.seed()                                                          # A04
-    for i in range(1, 2):
-        room_items[random.randint(0, 19)] += ['bat']
-        room_items[random.randint(0, 19)] += ['pit']
-    room_items[random.randint(0, 19)] += ['Wumpus']                        # A05
-    print room_items
-    return room_paths, room_items
-# def makeRoomLayout
+        room_paths = [None] * 20  # A01
+        room_paths[0] = [1, 2, 3]  # A02
+        room_paths[1] = [0, 4, 5]
+        room_paths[2] = [0, 6, 7]
+        room_paths[3] = [0, 8, 9]
+        room_paths[4] = [1, 9, 10]
+        room_paths[5] = [1, 6, 11]
+        room_paths[6] = [2, 5, 12]
+        room_paths[7] = [2, 8, 13]
+        room_paths[8] = [3, 7, 14]
+        room_paths[9] = [3, 4, 15]
+        room_paths[10] = [4, 11, 16]
+        room_paths[11] = [5, 10, 17]
+        room_paths[12] = [6, 13, 17]
+        room_paths[13] = [7, 12, 18]
+        room_paths[14] = [8, 15, 18]
+        room_paths[15] = [9, 14, 16]
+        room_paths[16] = [10, 15, 19]
+        room_paths[17] = [11, 12, 19]
+        room_paths[18] = [13, 14, 19]
+        room_paths[19] = [16, 17, 18]
 
+        room_items = [[]] * 20  # A03
+        random.seed()  # A04
+        for i in range(0, 2):
+            bat_location = random.randint(0, 19)
+            room_items[bat_location] = room_items[bat_location] + ['bat']
+            pit_location = random.randint(0, 19)
+            room_items[pit_location] = room_items[pit_location] + ['pit']
+        wumpus_location = random.randint(0, 19)  # A05
+        room_items[wumpus_location] = room_items[wumpus_location] + ['Wumpus']
+        return room_paths, room_items
+    # makeRoomLayout
 
-def find_empty_room(room_items):
-    for index, items in enumerate(room_items):
-        if items is []:
-            return index
-#def find_empty_room
+    def find_empty_room(self):
+        """
+        Find the first room with no bats, pits, or Wumpus in it
+        :rtype: int
+        """
+        for index, items in enumerate(self.room_items):
+            if not items:
+                return index
+    # find_empty_room
+
+    def describe_nearby_room_effects(self):
+        for room_number in self.room_paths[self.player_position]:
+            if 'bat' in self.room_items[room_number]:
+                print("It smells bad here!")
+            if 'pit' in self.room_items[room_number]:
+                print("It's drafty here!")
+    # describe_nearby_room_effects
+
+    def shoot(self):
+        if self.arrow_count < 1:
+            print("You are out of arrows!")
+        else:
+            room_list = int(raw_input("Arrow path?> "))
+
+            for room in room_list:
+                self.advance_arrow()
+                if 'Wumpus' in self.room_items[room]:
+                    print("You have slain the Wumpus! You win!")
+                    self.player_alive = false
+                    break
+                elif self.player_position == room:
+                    print("Your arrow returns and kills you!")
+                    self.player_alive = false
+                    break
+                else:
+                    print("Your arrow continues on, silently.")
+        self.arrow_count -= 1
+    # shoot
+
+    def continue_game(self):
+        while player_alive:  # A06
+            print("Your are in %d" % player_position)
+            if 'pit' in room_items[player_position]:  # A07
+                print("You fall into a pit and die!")
+                player_alive = False
+            elif 'bat' in room_items[player_position]:  # A08
+                print("A bat takes you to another room...")
+                player_position = random.randint(0, 19)
+            elif 'Wumpus' in room_items[player_position]:  # A09
+                print("The Wumpus wakes and eats you!")
+                player_alive = False
+            else:  # A10
+                describe_nearby_room_effects()
+                process_player_actions()
+                action_response = ''
+                while not action_response.lower() in ['q', 's', 'm']:
+                    action_response = raw_input("Do you want to shoot, "
+                                                "move, or quit(s/m/q)?> ")
+                    if action_response.lower() == 'q':
+                        print("So long, quitter!")
+                        player_alive = False
+                    elif action_response.lower() == 'm':
+                        new_player_position = -1
+                        while not new_player_position in room_paths[player_position]:
+                            print("You have tunnels only to rooms %d, %d, and %d" % tuple(room_paths[player_position]))
+                            new_player_position = int(raw_input("Move to?> "))
+                        player_position = new_player_position
+                    elif action_response.lower() == 's':
+                        self.shoot()
+    # continue_game
+# WumpusCave
 
 # -----
 # Main
 # ----
 def main():
-    """Plays one round of Hunt-The-Wumpus with a user."""
+    """
+    Plays one round of Hunt-The-Wumpus with a user.
+    """
     '''
     On each round the configuration of rooms and tunnels
     is the same, but the bottomless pits are placed at
@@ -172,16 +254,26 @@ def main():
     ---------
     A01 Display opening salutation;
     A02 Obtain request from user for instructions (usrChoice):
-            Do you want instructions (y/n)>
-    A03 If (usr requested instructions) {
+            Do you want instructions (y/n)?>
+    A03 If user requested instructions:
             Display <instructions>
     A04 Set up the rooms
     A05 Place the user in an empty room
-    A06 Obtain action from user
-    A07 Perform action
-        A08 Shoot
-        A09 Move rooms
-    A10 Change room state
+    A06 While player alive:
+        A07 Else if pit in room
+                Print pit death message
+                Player dies
+        A08 If bat in room
+                Print bat move message
+                Move player to new room
+        A09 Else if Wumpus in room
+                Print Wumpus death message
+                Player dies
+        A10 Else player alive
+                Describe any effects of nearby rooms
+                Obtain action from user
+                Perform action
+    A11 Display exit message
     '''
 
     print("")                                                             # A01
@@ -189,12 +281,15 @@ def main():
     print("+Hunt The Wumpus+")
     print("+++++++++++++++++\n")
 
-    give_instructions()                                                    # A02
+    user_response = raw_input("Do you want instructions (y/n)?> ")        # A02
+    if user_response in ['y', 'Y']:
+        give_instructions()                                               # A03
 
-    room_paths, room_items = make_room_layout()
-    player_position = find_empty_room(room_items)
+    wumpus_cave = WumpusCave.new()
 
-    print("-----------------")
+
+
+    print("-----------------")                                            # A11
     print("-Hunt The Wumpus-")
     print("-----------------")
 # def main():
