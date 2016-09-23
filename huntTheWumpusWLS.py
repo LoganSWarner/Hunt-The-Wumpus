@@ -3,12 +3,11 @@
 #
 # FILE:	   huntTheWumpuspy
 #
-# PYTHON VERSION: 2.7
+# EXEECUTION ENVIRONMENTS:
+# Python 2.7 on Manjaro Linux 16
+# Python 2.7 on Windows 10
 #
-# HISTORY:
-# Date		Author		    Description
-# ====		======		    ===========
-# 09/18/16  Logan Warner    Implemented actual game
+# AUTHOR(S): Logan Warner
 #
 # ATTRIBUTION:
 # From code by Michael P. Conlon
@@ -29,6 +28,7 @@
 # Python imports
 # --------------
 import random
+import re
 
 # ---------
 # Functions
@@ -100,9 +100,9 @@ def give_instructions():
 class WumpusCave:
     def __init__(self):
         self.player_alive = True
-        self.room_path, self.room_items = WumpusCave.make_room_layout()
+        self.room_paths, self.room_items = WumpusCave.make_room_layout()
         self.arrow_count = 5
-        self.player_position = self.find_empty_room();
+        self.player_position = self.find_empty_room()
     # __init__
 
     @staticmethod
@@ -176,62 +176,88 @@ class WumpusCave:
     # describe_nearby_room_effects
 
     def shoot(self):
-        if self.arrow_count < 1:
+        """
+        Method for dealing with the user opting to shoot an arrow
+        :return:
+        """
+        '''
+        Algorithm
+        ---------
+        A01 If arrow_count below 1
+            Display "You are out of arrows!"
+            Return
+        A02 Prompt "Arrow path?> "
+            Read
+            Parse input by splitting ','/', '
+            Initialize room_list
+        A03 Walk (list comprehension) room_list
+            Convert to int
+        A04 Walk room_list
+            A05 If Wumpus is in the room
+        '''
+        if self.arrow_count < 1:                                           #A01
             print("You are out of arrows!")
-        else:
-            room_list = int(raw_input("Arrow path?> "))
+            return
+        room_list = re.compile(', ?').split(raw_input("Arrow path?> "))    #A02
+        room_list = [int(roomStr) for roomStr in room_list]                #A03
 
-            for room in room_list:
-                self.advance_arrow()
-                if 'Wumpus' in self.room_items[room]:
-                    print("You have slain the Wumpus! You win!")
-                    self.player_alive = false
-                    break
-                elif self.player_position == room:
-                    print("Your arrow returns and kills you!")
-                    self.player_alive = false
-                    break
-                else:
-                    print("Your arrow continues on, silently.")
+        for room in room_list:                                             #A04
+            #self.advance_arrow()
+            if 'Wumpus' in self.room_items[room]:                          #A05
+                print("You have slain the Wumpus! You win!")
+                self.player_alive = False
+                break
+            elif self.player_position == room:
+                print("Your arrow returns and kills you!")
+                self.player_alive = False
+                break
+            else:
+                print("Your arrow continues on, silently.")
         self.arrow_count -= 1
     # shoot
 
+    def process_player_actions(self):
+        action_response = ''
+        while not action_response.lower() in ['q', 's', 'm']:
+            action_response = raw_input("Do you want to shoot, "
+                                        "move, or quit(s/m/q)?> ")
+            if action_response.lower() == 'q':
+                print("So long, quitter!")
+                self.player_alive = False
+            elif action_response.lower() == 'm':
+                new_player_position = -1
+                while new_player_position not in self.room_paths[player_position]:
+                    print("You have tunnels only to rooms %d, %d, and %d" %
+                          tuple(self.room_paths[player_position]))
+                    new_player_position = int(raw_input("Move to?> "))
+                player_position = new_player_position
+            elif action_response.lower() == 's':
+                self.shoot()
+    # process_player_actions
+
     def continue_game(self):
-        while player_alive:  # A06
-            print("Your are in %d" % player_position)
-            if 'pit' in room_items[player_position]:  # A07
+        while self.player_alive:  # A06
+            print("Your are in %d" % self.player_position)
+            if 'pit' in self.room_items[self.player_position]:
                 print("You fall into a pit and die!")
                 player_alive = False
-            elif 'bat' in room_items[player_position]:  # A08
+            elif 'bat' in self.room_items[self.player_position]:
                 print("A bat takes you to another room...")
                 player_position = random.randint(0, 19)
-            elif 'Wumpus' in room_items[player_position]:  # A09
-                print("The Wumpus wakes and eats you!")
-                player_alive = False
-            else:  # A10
-                describe_nearby_room_effects()
-                process_player_actions()
-                action_response = ''
-                while not action_response.lower() in ['q', 's', 'm']:
-                    action_response = raw_input("Do you want to shoot, "
-                                                "move, or quit(s/m/q)?> ")
-                    if action_response.lower() == 'q':
-                        print("So long, quitter!")
-                        player_alive = False
-                    elif action_response.lower() == 'm':
-                        new_player_position = -1
-                        while not new_player_position in room_paths[player_position]:
-                            print("You have tunnels only to rooms %d, %d, and %d" % tuple(room_paths[player_position]))
-                            new_player_position = int(raw_input("Move to?> "))
-                        player_position = new_player_position
-                    elif action_response.lower() == 's':
-                        self.shoot()
+            elif 'Wumpus' in self.room_items[self.player_position]:
+                print("The Wumpus growls and eats you!")
+                self.player_alive = False
+            else:
+                self.describe_nearby_room_effects()
+                self.process_player_actions()
     # continue_game
 # WumpusCave
 
 # -----
 # Main
 # ----
+
+
 def main():
     """
     Plays one round of Hunt-The-Wumpus with a user.
@@ -285,9 +311,8 @@ def main():
     if user_response in ['y', 'Y']:
         give_instructions()                                               # A03
 
-    wumpus_cave = WumpusCave.new()
-
-
+    wumpus_cave = WumpusCave()
+    wumpus_cave.continue_game()
 
     print("-----------------")                                            # A11
     print("-Hunt The Wumpus-")
