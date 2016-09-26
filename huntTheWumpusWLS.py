@@ -1,7 +1,7 @@
 # ***************************************************************
 # PROJECT: HuntTheWumpus
 #
-# FILE:	   huntTheWumpuspy
+# FILE:	   huntTheWumpus.py
 #
 # EXEECUTION ENVIRONMENTS:
 # Python 2.7 on Manjaro Linux 16
@@ -28,7 +28,7 @@
 # Python imports
 # --------------
 import random
-import re
+from Player import Player
 
 # ---------
 # Functions
@@ -99,9 +99,8 @@ def give_instructions():
 
 class WumpusCave:
     def __init__(self):
-        self.player_alive = True
+        self.player = Player()
         self.room_paths, self.room_items = WumpusCave.make_room_layout()
-        self.arrow_count = 5
         self.player_position = self.find_empty_room()
     # __init__
 
@@ -170,6 +169,8 @@ class WumpusCave:
     def describe_nearby_room_effects(self):
         for room_number in self.room_paths[self.player_position]:
             if 'bat' in self.room_items[room_number]:
+                print("You hear bats nearby!")
+            if 'Wumpus' in self.room_items[room_number]:
                 print("It smells bad here!")
             if 'pit' in self.room_items[room_number]:
                 print("It's drafty here!")
@@ -195,7 +196,7 @@ class WumpusCave:
         A04 Walk room_list
             A05 If Wumpus is in the room
         '''
-        if self.arrow_count < 1:                                           #A01
+        if not self.player.hasArrows():                                           #A01
             print("You are out of arrows!")
             return
         room_list = re.compile(', ?').split(raw_input("Arrow path?> "))    #A02
@@ -205,15 +206,15 @@ class WumpusCave:
             #self.advance_arrow()
             if 'Wumpus' in self.room_items[room]:                          #A05
                 print("You have slain the Wumpus! You win!")
-                self.player_alive = False
+                self.player.kill()
                 break
             elif self.player_position == room:
                 print("Your arrow returns and kills you!")
-                self.player_alive = False
+                self.player.kill()
                 break
             else:
                 print("Your arrow continues on, silently.")
-        self.arrow_count -= 1
+        self.player.loseArrow()
     # shoot
 
     def process_player_actions(self):
@@ -223,30 +224,30 @@ class WumpusCave:
                                         "move, or quit(s/m/q)?> ")
             if action_response.lower() == 'q':
                 print("So long, quitter!")
-                self.player_alive = False
+                self.player.kill()
             elif action_response.lower() == 'm':
                 new_player_position = -1
-                while new_player_position not in self.room_paths[player_position]:
+                while new_player_position not in self.room_paths[self.player_position]:
                     print("You have tunnels only to rooms %d, %d, and %d" %
-                          tuple(self.room_paths[player_position]))
+                          tuple(self.room_paths[self.player_position]))
                     new_player_position = int(raw_input("Move to?> "))
-                player_position = new_player_position
+                self.player_position = new_player_position
             elif action_response.lower() == 's':
                 self.shoot()
     # process_player_actions
 
     def continue_game(self):
-        while self.player_alive:  # A06
+        while self.player.alive:  # A06
             print("Your are in %d" % self.player_position)
             if 'pit' in self.room_items[self.player_position]:
                 print("You fall into a pit and die!")
-                player_alive = False
+                self.player.kill()
             elif 'bat' in self.room_items[self.player_position]:
                 print("A bat takes you to another room...")
-                player_position = random.randint(0, 19)
+                self.player_position = random.randint(0, 19)
             elif 'Wumpus' in self.room_items[self.player_position]:
                 print("The Wumpus growls and eats you!")
-                self.player_alive = False
+                self.player.kill()
             else:
                 self.describe_nearby_room_effects()
                 self.process_player_actions()
