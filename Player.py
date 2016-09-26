@@ -13,9 +13,10 @@
 # Player for HuntTheWumpus
 # ***************************************************************
 
+
 class Player:
     def __init__(self):
-        self.alive = True
+        self.isAlive = True
         self.arrowCount = 5
     #__init__
 
@@ -28,6 +29,6 @@ class Player:
     #loseArrow
 
     def kill(self):
-        self.alive = False
+        self.isAlive = False
     #kill
 #player

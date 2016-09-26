@@ -28,7 +28,9 @@
 # Python imports
 # --------------
 import random
+import re
 from Player import Player
+from Arrow import Arrow
 
 # ---------
 # Functions
@@ -123,26 +125,26 @@ class WumpusCave:
         '''
 
         room_paths = [None] * 20  # A01
-        room_paths[0] = [1, 2, 3]  # A02
-        room_paths[1] = [0, 4, 5]
-        room_paths[2] = [0, 6, 7]
-        room_paths[3] = [0, 8, 9]
-        room_paths[4] = [1, 9, 10]
-        room_paths[5] = [1, 6, 11]
-        room_paths[6] = [2, 5, 12]
-        room_paths[7] = [2, 8, 13]
-        room_paths[8] = [3, 7, 14]
-        room_paths[9] = [3, 4, 15]
-        room_paths[10] = [4, 11, 16]
-        room_paths[11] = [5, 10, 17]
-        room_paths[12] = [6, 13, 17]
-        room_paths[13] = [7, 12, 18]
-        room_paths[14] = [8, 15, 18]
-        room_paths[15] = [9, 14, 16]
-        room_paths[16] = [10, 15, 19]
-        room_paths[17] = [11, 12, 19]
-        room_paths[18] = [13, 14, 19]
-        room_paths[19] = [16, 17, 18]
+        room_paths[0] = {1, 2, 3}  # A02
+        room_paths[1] = {0, 4, 5}
+        room_paths[2] = {0, 6, 7}
+        room_paths[3] = {0, 8, 9}
+        room_paths[4] = {1, 9, 10}
+        room_paths[5] = {1, 6, 11}
+        room_paths[6] = {2, 5, 12}
+        room_paths[7] = {2, 8, 13}
+        room_paths[8] = {3, 7, 14}
+        room_paths[9] = {3, 4, 15}
+        room_paths[10] = {4, 11, 16}
+        room_paths[11] = {5, 10, 17}
+        room_paths[12] = {6, 13, 17}
+        room_paths[13] = {7, 12, 18}
+        room_paths[14] = {8, 15, 18}
+        room_paths[15] = {9, 14, 16}
+        room_paths[16] = {10, 15, 19}
+        room_paths[17] = {11, 12, 19}
+        room_paths[18] = {13, 14, 19}
+        room_paths[19] = {16, 17, 18}
 
         room_items = [[]] * 20  # A03
         random.seed()  # A04
@@ -196,24 +198,25 @@ class WumpusCave:
         A04 Walk room_list
             A05 If Wumpus is in the room
         '''
-        if not self.player.hasArrows():                                           #A01
+        if not self.player.hasArrows():                                    #A01
             print("You are out of arrows!")
             return
         room_list = re.compile(', ?').split(raw_input("Arrow path?> "))    #A02
         room_list = [int(roomStr) for roomStr in room_list]                #A03
 
-        for room in room_list:                                             #A04
-            #self.advance_arrow()
-            if 'Wumpus' in self.room_items[room]:                          #A05
+        arrow = Arrow(self.player_position, self.room_paths)
+        for nextRoomNum in room_list:                                         #A04
+            nextRoomNum = arrow.advance(nextRoomNum)
+            if 'Wumpus' in self.room_items[nextRoomNum]:                      #A05
                 print("You have slain the Wumpus! You win!")
                 self.player.kill()
                 break
-            elif self.player_position == room:
+            elif self.player_position == nextRoomNum:
                 print("Your arrow returns and kills you!")
                 self.player.kill()
                 break
             else:
-                print("Your arrow continues on, silently.")
+                print("Your arrow continues on in room %d, silently." % nextRoomNum)
         self.player.loseArrow()
     # shoot
 
@@ -237,7 +240,7 @@ class WumpusCave:
     # process_player_actions
 
     def continue_game(self):
-        while self.player.alive:  # A06
+        while self.player.isAlive:  # A06
             print("Your are in %d" % self.player_position)
             if 'pit' in self.room_items[self.player_position]:
                 print("You fall into a pit and die!")
