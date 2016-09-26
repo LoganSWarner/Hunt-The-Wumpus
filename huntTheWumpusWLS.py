@@ -125,26 +125,26 @@ class WumpusCave:
         '''
 
         room_paths = [None] * 20  # A01
-        room_paths[0] = {1, 2, 3}  # A02
-        room_paths[1] = {0, 4, 5}
-        room_paths[2] = {0, 6, 7}
-        room_paths[3] = {0, 8, 9}
-        room_paths[4] = {1, 9, 10}
-        room_paths[5] = {1, 6, 11}
-        room_paths[6] = {2, 5, 12}
-        room_paths[7] = {2, 8, 13}
-        room_paths[8] = {3, 7, 14}
-        room_paths[9] = {3, 4, 15}
-        room_paths[10] = {4, 11, 16}
-        room_paths[11] = {5, 10, 17}
-        room_paths[12] = {6, 13, 17}
-        room_paths[13] = {7, 12, 18}
-        room_paths[14] = {8, 15, 18}
-        room_paths[15] = {9, 14, 16}
-        room_paths[16] = {10, 15, 19}
-        room_paths[17] = {11, 12, 19}
-        room_paths[18] = {13, 14, 19}
-        room_paths[19] = {16, 17, 18}
+        room_paths[0] = {1, 4, 7}  # A02
+        room_paths[1] = {0, 2, 9}
+        room_paths[2] = {1, 3, 11}
+        room_paths[3] = {2, 4, 13}
+        room_paths[4] = {0, 3, 5}
+        room_paths[5] = {4, 6, 14}
+        room_paths[6] = {5, 7, 16}
+        room_paths[7] = {0, 6, 8}
+        room_paths[8] = {7, 9, 17}
+        room_paths[9] = {1, 8, 10}
+        room_paths[10] = {9, 11, 18}
+        room_paths[11] = {2, 10, 12}
+        room_paths[12] = {11, 13, 19}
+        room_paths[13] = {3, 12, 14}
+        room_paths[14] = {5, 13, 15}
+        room_paths[15] = {14, 16, 19}
+        room_paths[16] = {6, 15, 17}
+        room_paths[17] = {8, 16, 18}
+        room_paths[18] = {10, 17, 19}
+        room_paths[19] = {12, 15, 18}
 
         room_items = [[]] * 20  # A03
         random.seed()  # A04
