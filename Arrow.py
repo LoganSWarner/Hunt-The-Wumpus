@@ -1,7 +1,7 @@
 # ***************************************************************
 # PROJECT: HuntTheWumpus
 #
-# FILE:	   Player.py
+# FILE:	   Arrow.py
 #
 # EXEECUTION ENVIRONMENTS:
 # Python 2.7 on Manjaro Linux 16
@@ -10,7 +10,7 @@
 # AUTHOR(S): Logan Warner
 #
 # DESCRIPTION
-# Player for HuntTheWumpus
+# Arrow logic for HuntTheWumpus
 # ***************************************************************
 import random
 
