@@ -101,9 +101,20 @@ def give_instructions():
 
 class WumpusCave:
     def __init__(self):
-        self.player = Player()
-        self.room_paths, self.room_items = WumpusCave.make_room_layout()
-        self.player_position = self.find_empty_room()
+        """
+        Set up the initial cave contents and states
+        """
+        '''
+        Algorthim
+        ---------
+        A01 Instantiate Player
+        A02 Initialize player
+        A03 Initialize list room_paths and room_items
+        A04 Initialize player_position
+        '''
+        self.player = Player()                                         #A01 A02
+        self.room_paths, self.room_items = WumpusCave.make_room_layout()   #A03
+        self.player_position = self.find_empty_room()                      #A04
     # __init__
 
     @staticmethod
@@ -116,16 +127,19 @@ class WumpusCave:
         '''
         Algorithm
         ---------
-        A01 Create a size 20 list, room_paths, to represent paths
-        A02 Populate room_paths according to possible vertices to go to for each
-            index, based on numbering a dodecahedron in a spiral manner
-        A03 Create a size 20 list, room_items, to represent room contents
-        A04 Populate room_items with, randomly-placed, 2 bats & pits
-        A05 Place, randomly, a Wumpus into room_items
+        A01 Initialize room_paths with 20 of None
+        A02 Set room_paths to sets representing paths to available vertices
+            (indices) at each vertex (index)
+        A03 Initialize room_items with 20 of the empty list
+        A04 Seed random
+        A05 For three times
+            A06
+            A07
+        A06 Place, randomly, a Wumpus into room_items
         '''
 
-        room_paths = [None] * 20  # A01
-        room_paths[0] = {1, 4, 7}  # A02
+        room_paths = [None] * 20                                           #A01
+        room_paths[0] = {1, 4, 7}                                          #A02
         room_paths[1] = {0, 2, 9}
         room_paths[2] = {1, 3, 11}
         room_paths[3] = {2, 4, 13}
@@ -146,9 +160,9 @@ class WumpusCave:
         room_paths[18] = {10, 17, 19}
         room_paths[19] = {12, 15, 18}
 
-        room_items = [[]] * 20  # A03
-        random.seed()  # A04
-        for i in range(0, 2):
+        room_items = [[]] * 20                                             #A03
+        random.seed()                                                      #A04
+        for i in range(0, 2):                                              #A05
             bat_location = random.randint(0, 19)
             room_items[bat_location] = room_items[bat_location] + ['bat']
             pit_location = random.randint(0, 19)
@@ -205,9 +219,9 @@ class WumpusCave:
         room_list = [int(roomStr) for roomStr in room_list]                #A03
 
         arrow = Arrow(self.player_position, self.room_paths)
-        for nextRoomNum in room_list:                                         #A04
+        for nextRoomNum in room_list:                                      #A04
             nextRoomNum = arrow.advance(nextRoomNum)
-            if 'Wumpus' in self.room_items[nextRoomNum]:                      #A05
+            if 'Wumpus' in self.room_items[nextRoomNum]:                   #A05
                 print("You have slain the Wumpus! You win!")
                 self.player.kill()
                 break
@@ -240,7 +254,7 @@ class WumpusCave:
     # process_player_actions
 
     def continue_game(self):
-        while self.player.isAlive:  # A06
+        while self.player.isAlive:
             print("Your are in %d" % self.player_position)
             if 'pit' in self.room_items[self.player_position]:
                 print("You fall into a pit and die!")
@@ -282,13 +296,13 @@ def main():
 
     Algorithm
     ---------
-    A01 Display opening salutation;
-    A02 Obtain request from user for instructions (usrChoice):
+    A01 Display opening salutation
+    A02 Obtain request from user for instructions (usrChoice)
             Do you want instructions (y/n)?>
     A03 If user requested instructions:
             Display <instructions>
-    A04 Set up the rooms
-    A05 Place the user in an empty room
+    A04 Setup the rooms
+
     A06 While player alive:
         A07 Else if pit in room
                 Print pit death message
