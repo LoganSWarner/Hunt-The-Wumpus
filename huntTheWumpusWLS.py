@@ -176,8 +176,14 @@ class WumpusCave:
         """
         Find the first room with no bats, pits, or Wumpus in it
         :rtype: int
+        :return: first empty index in self.room_items
         """
-        for index, items in enumerate(self.room_items):
+        '''
+        Algorithm
+        ---------
+        A01 Return first empty index in room_items
+        '''
+        for index, items in enumerate(self.room_items):                    #L01
             if not items:
                 return index
     # find_empty_room
@@ -195,7 +201,6 @@ class WumpusCave:
     def shoot(self):
         """
         Method for dealing with the user opting to shoot an arrow
-        :return:
         """
         '''
         Algorithm
@@ -205,32 +210,44 @@ class WumpusCave:
             Return
         A02 Prompt "Arrow path?> "
             Read
-            Parse input by splitting ','/', '
+            Parse input by splitting ','/', '/' '
             Initialize room_list
         A03 Walk (list comprehension) room_list
             Convert to int
         A04 Walk room_list
             A05 If Wumpus is in the room
+                Display "You have slain the Wumpus! You win!"
+                Call player.kill
+                Break
+            A06 Else if player is in the room
+                Display "Your arrow returns and kills you!"
+                Call player.kill
+                Break
+            A07 Else
+                Display "Your arrow continues on in room <nextRoomNum>,
+                         silently."
         '''
-        if not self.player.hasArrows():                                    #A01
+        if not self.player.hasArrows():                                    #L01
             print("You are out of arrows!")
             return
-        room_list = re.compile(', ?').split(raw_input("Arrow path?> "))    #A02
-        room_list = [int(roomStr) for roomStr in room_list]                #A03
+        room_list = re.compile('[ ]*[, ]?[ ]*').\
+                    split(raw_input("Arrow path?> "))
+        room_list = [int(roomStr) for roomStr in room_list]                #L03
 
         arrow = Arrow(self.player_position, self.room_paths)
-        for nextRoomNum in room_list:                                      #A04
+        for nextRoomNum in room_list:                                      #L04
             nextRoomNum = arrow.advance(nextRoomNum)
-            if 'Wumpus' in self.room_items[nextRoomNum]:                   #A05
+            if 'Wumpus' in self.room_items[nextRoomNum]:                   #L05
                 print("You have slain the Wumpus! You win!")
                 self.player.kill()
                 break
-            elif self.player_position == nextRoomNum:
+            elif self.player_position == nextRoomNum:                      #L06
                 print("Your arrow returns and kills you!")
                 self.player.kill()
                 break
-            else:
-                print("Your arrow continues on in room %d, silently." % nextRoomNum)
+            else:                                                          #L07
+                print("Your arrow continues on in room %d, silently."
+                      % nextRoomNum)
         self.player.loseArrow()
     # shoot
 
