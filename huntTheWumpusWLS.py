@@ -176,16 +176,17 @@ class WumpusCave:
         room_paths[18] = {10, 17, 19}
         room_paths[19] = {12, 15, 18}
 
-        room_items = [set() for _ in range(20)]                            #L03
+        room_items = [[] for _ in range(20)]                               #L03
         random.seed()                                                      #L04
         bat_location = random.randint(0, 19)                               #L05
-        room_items[bat_location].add('bat')
-        room_items[WumpusCave.reposition_randomly(bat_location)].add('bat')
+        room_items[bat_location].append('bat')
+        room_items[WumpusCave.reposition_randomly(bat_location)].append('bat')
         pit_location = random.randint(0, 19)                               #L06
-        room_items[pit_location].add('pit')
-        room_items[WumpusCave.reposition_randomly(pit_location)].add('pit')
+        room_items[pit_location].append('pit')
+        room_items[WumpusCave.reposition_randomly(pit_location)].append('pit')
         wumpus_location = random.randint(0, 19)                            #L07
-        room_items[wumpus_location].add('Wumpus')
+        room_items[wumpus_location].append('Wumpus')
+        print(room_items)
         return room_paths, room_items                                      #L08
     #makeRoomLayout
 
@@ -243,7 +244,7 @@ class WumpusCave:
             A05 Walk room list to find the Wumpus
                 A06 If Wumpus in room
                     A07 Delete the Wumpus from items list
-                    A08 Append a Wumpus to a new different random position
+                    A08 Append a Wumpus to a random adjacent room
             A09 If player in room Wumpus entered
                 A10 Call player.kill() with Wumpus death message
         '''
@@ -252,13 +253,12 @@ class WumpusCave:
         if random.randint(0, 3) > 0:                                       #L03
             print("The Wumpus storms into another room...")                #L04
             for roomNum, room in enumerate(self.room_items):               #L05
-                print(room)
                 if 'Wumpus' in room:                                       #L06
                     room.remove('Wumpus')                                  #L07
+                    random.seed()                                          #L08
                     new_wumpus_location =\
-                        WumpusCave.reposition_randomly(roomNum)            #L08
-                    self.room_items[new_wumpus_location] =\
-                        self.room_items[new_wumpus_location].add('Wumpus')
+                        random.choice(tuple(self.room_paths[roomNum]))
+                    self.room_items[new_wumpus_location].append('Wumpus')
             if 'Wumpus' in self.room_items[self.player_position]:          #L09
                 self.player.kill("The Wumpus growls and eats you!")        #L10
     #wake_wumpus
@@ -374,6 +374,8 @@ class WumpusCave:
             A05 Else if bat in room
                 A06 Display "A bat takes you to another room..."
                 A07 Initialize roomOffset to a random integer [1,19]
+                A08 Delete bat at location
+                A09 Append bat to random new location
                 A08 Set player position randomly
             A09 Else if Wumpus in room
                 A10 Call player.kill with Wumpus death message
@@ -389,14 +391,19 @@ class WumpusCave:
             elif 'bat' in self.room_items[self.player_position]:           #L05
                 print("A bat takes you to another room...")                #L06
                 roomOffset = random.randint(1, 19)                         #L07
+                self.room_items[self.player_position].remove('bat')        #L08
+                new_bat_location =\
+                    WumpusCave.reposition_randomly(self.player_position)   #L09
+                self.room_items[new_bat_location].append('bat')
+                roomOffset = random.randint(1, 19)                         #L10
                 self.player_position =\
-                    WumpusCave.reposition_randomly(self.player_position)   #L08
-            elif 'Wumpus' in self.room_items[self.player_position]:        #L09
-                self.player.kill("The Wumpus growls and eats you!")        #L10
-            else:                                                          #L11
-                self.describe_nearby_room_effects()                        #L12
-                self.process_player_actions()                              #L13
-        print self.player.deathMessage                                     #L14
+                    WumpusCave.reposition_randomly(self.player_position)   #L11
+            elif 'Wumpus' in self.room_items[self.player_position]:        #L12
+                self.player.kill("The Wumpus growls and eats you!")        #L13
+            else:                                                          #L14
+                self.describe_nearby_room_effects()                        #L15
+                self.process_player_actions()                              #L16
+        print self.player.deathMessage                                     #L17
     #play
 #WumpusCave
 
