@@ -18,6 +18,7 @@ class Player:
     def __init__(self):
         self.isAlive = True
         self.arrowCount = 5
+        self.deathMessage = ''
     #__init__
 
     def hasArrows(self):
@@ -28,7 +29,8 @@ class Player:
         self.arrowCount -= 1
     #loseArrow
 
-    def kill(self):
+    def kill(self, deathMessagePR):
         self.isAlive = False
+        self.deathMessage = deathMessagePR
     #kill
 #player
